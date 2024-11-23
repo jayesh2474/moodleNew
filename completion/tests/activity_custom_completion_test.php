@@ -113,14 +113,13 @@ class activity_custom_completion_test extends advanced_testcase {
 
         // Mock activity_custom_completion's get_state() method.
         if ($invokecount > 0) {
-            $stateinvocations = $this->exactly($invokecount);
-            $stub->expects($stateinvocations)
+            $stub->expects($this->exactly($invokecount))
                 ->method('get_state')
-                ->willReturnCallback(function ($rule) use ($stateinvocations, $rules, $rulestates) {
-                    $index = self::getInvocationCount($stateinvocations) - 1;
-                    $this->assertEquals($rules[$index], $rule);
-                    return $rulestates[$index];
-                });
+                ->withConsecutive(
+                    [$rules[0]],
+                    [$rules[1]]
+                )
+                ->willReturn($rulestates[0], $rulestates[1]);
         } else {
             $stub->expects($this->never())
                 ->method('get_state');

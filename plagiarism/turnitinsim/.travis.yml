@@ -1,0 +1,55 @@
+language: php
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+php:
+ - 7.2
+ - 7.4
+
+services:
+ - mysql
+ - postgresql
+
+env:
+ matrix:
+  - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
+
+matrix:
+ exclude:
+  - env: DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
+    php: 7.4
+  - env: DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
+    php: 7.4
+  - env: DB=pgsql MOODLE_BRANCH=MOODLE_38_STABLE
+    php: 7.2
+  - env: DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
+    php: 7.2
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  - cd ../..
+  - composer selfupdate
+  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+  - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+
+install:
+  - moodle-plugin-ci install
+
+script:
+  - moodle-plugin-ci phplint
+  - moodle-plugin-ci phpcpd
+  - moodle-plugin-ci phpmd
+  - moodle-plugin-ci codechecker
+  - moodle-plugin-ci csslint
+  - moodle-plugin-ci shifter
+  - moodle-plugin-ci jshint
+  - moodle-plugin-ci validate
+  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci behat

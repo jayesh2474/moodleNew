@@ -1,0 +1,113 @@
+// Ensure consistent width and height for the login container
+.pagelayout-login #page {
+    background: $loginbackground-gradient-from;
+    @include gradient-x($loginbackground-gradient-from, $loginbackground-gradient-to, 0%, 100%);
+    div[role="main"] {
+        height: 100%;
+    }
+}
+
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; // Full-screen height for proper centering
+}
+
+.login-container {
+    background-color: $logincontainer-bg;
+    padding: $logincontainer-padding;
+    box-shadow: $logincontainer-shadow;
+    margin-bottom: 2rem;
+    width: 500px; // Maintain fixed width
+    height: 600px; // Consistent height
+    @include border-radius(0.5rem); // Rounded corners for a clean look
+
+    .login-languagemenu {
+        display: flex;
+        justify-content: flex-start;
+        .dropdown-menu {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    }
+    .login-logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    .login-divider {
+        margin-top: $logindivider-margin-top;
+        margin-bottom: $logindivider-margin-bottom;
+        border-top: $border-width solid $logindivider-border;
+    }
+
+    h1.login-heading {
+        font-size: $h2-font-size;
+    }
+
+    h2.login-heading {
+        font-size: $h4-font-size;
+    }
+    .login-identityproviders {
+        .login-identityprovider-btn {
+            border: $border-width solid $login-identity-provider-btn-border;
+        }
+    }
+    .divider {
+        width: $border-width;
+        background-color: $gray-300;
+        height: $font-size-base * 2;
+    }
+    .action-menu-trigger {
+        a {
+            margin: 0.5rem 0;
+        }
+    }
+}
+
+#page-login-index .login-container {
+    .loginform {
+        width: 100%; // Match container width
+        height: 100%; // Match container height
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 2rem;
+        
+        border-radius: 0.5rem;
+
+        .left-column {
+            padding-right: 1.5rem; // Reduce padding for better responsiveness
+        }
+
+        .right-column {
+            padding-left: 1.5rem;
+            border-left: 1px solid $gray-300;
+
+            .column-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+            }
+        }
+    }
+}
+
+// Responsive Adjustments
+@include media-breakpoint-up(md) {
+    .login-container {
+        width: 500px; // Maintain fixed size on larger screens
+        height: 600px;
+        @include border-radius();
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .login-container {
+        width: 90%; // Adjust for smaller screens
+        height: auto; // Allow dynamic height on small screens
+        padding: 1.5rem;
+    }
+}

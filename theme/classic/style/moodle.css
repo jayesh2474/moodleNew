@@ -13302,7 +13302,7 @@ readers do not read off random characters that represent icons */
   --blue: #0f6cbf;
   --indigo: #6610f2;
   --purple: #613d7c;
-  --pink: #db1a74;
+  --pink: #e83e8c;
   --red: #ca3120;
   --orange: #f0ad4e;
   --yellow: #ff7518;
@@ -13858,7 +13858,7 @@ mark,
 
 code {
   font-size: 87.5%;
-  color: #db1a74;
+  color: #e83e8c;
   word-wrap: break-word;
 }
 a > code {
@@ -30028,7 +30028,7 @@ span.editinstructions .alert-link {
   padding: 0;
   margin: 0.5rem 0;
 }
-.activity.subsection > .activity-item > .activity-grid > .activity-altcontent {
+.activity.subsection > .activity-item .activity-altcontent {
   margin-top: 0;
 }
 .activity.subsection .section {
@@ -33516,7 +33516,6 @@ textarea[data-auto-rows] {
 .felement[data-fieldtype=autocomplete],
 .felement[data-fieldtype=tags] {
   display: block !important; /* stylelint-disable-line declaration-no-important */
-  position: static;
 }
 
 [data-fieldtype=editor] > div {
@@ -35117,18 +35116,6 @@ img.userpicture {
   border-radius: 0.5rem;
   width: 32px;
   height: 32px;
-}
-.path-mod-feedback#page-mod-feedback-manage_templates .coursetemplates .no-overflow,
-.path-mod-feedback#page-mod-feedback-manage_templates .publictemplates .no-overflow {
-  overflow: visible;
-}
-.path-mod-feedback#page-mod-feedback-manage_templates .coursetemplates .action-menu .menubar,
-.path-mod-feedback#page-mod-feedback-manage_templates .publictemplates .action-menu .menubar {
-  justify-content: end;
-}
-.path-mod-feedback#page-mod-feedback-manage_templates .dropdown-item:hover a.text-danger, .path-mod-feedback#page-mod-feedback-use_templ .dropdown-item:hover a.text-danger {
-  color: #fff !important; /* stylelint-disable-line declaration-no-important */
-  text-decoration: none;
 }
 .path-mod-feedback table.analysis {
   width: 100%;
@@ -37205,17 +37192,6 @@ span[data-flexitour=container][x-placement=right] div[data-role=arrow]:after, sp
 }
 .modal .btn-close:not(:disabled):not(.disabled):hover, .modal .btn-close:not(:disabled):not(.disabled):focus {
   opacity: inherit;
-}
-
-/* Change the modal-dialog-scrollable class to position: static to fix the issue with popper.js and autocomplete. */
-.modal-dialog-scrollable:has(.form-autocomplete-suggestions) {
-  position: static;
-}
-.modal-dialog-scrollable:has(.form-autocomplete-suggestions) .modal-content {
-  position: static;
-}
-.modal-dialog-scrollable:has(.form-autocomplete-suggestions) .modal-content .modal-body {
-  position: static;
 }
 
 /* Bug fix for TinyMCE menu when in fullscreen mode. */

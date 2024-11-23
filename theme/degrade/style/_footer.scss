@@ -1,0 +1,21 @@
+#page-footer .footer-content-debugging {
+    text-align: center;
+    .purgecaches {
+        padding: 5px 0;
+        margin-right: 10px;
+        display: inline-block;
+    }
+}
+#footer {
+    .settings-edit {
+        img {
+            filter: invert(100%);
+            width: 20px;
+            height: 20px;
+        }
+    }
+    @import "footer-all";
+}
+.footer-bottom p {
+    text-align: center;
+}

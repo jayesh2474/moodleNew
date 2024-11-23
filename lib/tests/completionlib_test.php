@@ -247,17 +247,10 @@ class completionlib_test extends advanced_testcase {
         $c->expects($this->exactly(1)) // Pretend the user has the required capability for overriding completion statuses.
             ->method('user_can_override_completion')
             ->will($this->returnValue(true));
-        $getinvocations = $this->exactly(2);
-        $c->expects($getinvocations)
+        $c->expects($this->exactly(2))
             ->method('get_data')
             ->with($cm, false, 100)
-            ->willReturnCallback(function () use ($getinvocations, $current1, $current2) {
-                return match (self::getInvocationCount($getinvocations)) {
-                    1 => $current1,
-                    2 => $current2,
-                    default => $this->fail('Unexpected invocation count'),
-                };
-            });
+            ->willReturnOnConsecutiveCalls($current1, $current2);
         $changed1 = clone($current1);
         $changed1->timemodified = time();
         $changed1->completionstate = COMPLETION_COMPLETE;
@@ -270,28 +263,12 @@ class completionlib_test extends advanced_testcase {
         $changed2->completionstate = COMPLETION_INCOMPLETE;
         $comparewith2 = new phpunit_constraint_object_is_equal_with_exceptions($changed2);
         $comparewith2->add_exception('timemodified', 'assertGreaterThanOrEqual');
-        $setinvocations = $this->exactly(2);
-        $c->expects($setinvocations)
+        $c->expects($this->exactly(2))
             ->method('internal_set_data')
-            ->willReturnCallback(function ($comparecm, $comparewith) use (
-                $setinvocations,
-                $cm,
-                $comparewith1,
-                $comparewith2
-            ): void {
-                switch (self::getInvocationCount($setinvocations)) {
-                    case 1:
-                        $this->assertEquals($cm, $comparecm);
-                        $comparewith1->evaluate($comparewith);
-                        break;
-                    case 2:
-                        $this->assertEquals($cm, $comparecm);
-                        $comparewith2->evaluate($comparewith);
-                        break;
-                    default:
-                        $this->fail('Unexpected invocation count');
-                }
-            });
+            ->withConsecutive(
+                array($cm, $comparewith1),
+                array($cm, $comparewith2)
+            );
         $c->update_state($cm, COMPLETION_COMPLETE, 100, true);
         // And confirm that the status can be changed back to incomplete without an override.
         $c->update_state($cm, COMPLETION_INCOMPLETE, 100);
@@ -708,26 +685,13 @@ class completionlib_test extends advanced_testcase {
             (object)array('id' => 100, 'firstname' => 'Woot', 'lastname' => 'Plugh'),
             (object)array('id' => 201, 'firstname' => 'Vroom', 'lastname' => 'Xyzzy'))));
 
-        $updateinvocations = $this->exactly(3);
-        $c->expects($updateinvocations)
+        $c->expects($this->exactly(3))
             ->method('update_state')
-            ->willReturnCallback(function ($comparecm, $state, $userid) use ($updateinvocations, $cm): void {
-                $this->assertEquals($cm, $comparecm);
-                $this->assertEquals(COMPLETION_UNKNOWN, $state);
-                switch (self::getInvocationCount($updateinvocations)) {
-                    case 1:
-                        $this->assertEquals(100, $userid);
-                        break;
-                    case 2:
-                        $this->assertEquals(101, $userid);
-                        break;
-                    case 3:
-                        $this->assertEquals(201, $userid);
-                        break;
-                    default:
-                        $this->fail('Unexpected invocation count');
-                }
-            });
+            ->withConsecutive(
+                array($cm, COMPLETION_UNKNOWN, 100),
+                array($cm, COMPLETION_UNKNOWN, 101),
+                array($cm, COMPLETION_UNKNOWN, 201)
+            );
 
         $c->reset_all_state($cm);
     }
@@ -1214,31 +1178,20 @@ class completionlib_test extends advanced_testcase {
             ->method('get_tracked_users')
             ->with(true,  3,  0,  '',  '',  '',  null)
             ->will($this->returnValue($tracked));
-        $inorequalsinvocations = $this->exactly(2);
-        $DB->expects($inorequalsinvocations)
+        $DB->expects($this->exactly(2))
             ->method('get_in_or_equal')
-            ->willReturnCallback(function ($paramids) use ($inorequalsinvocations, $ids) {
-                switch (self::getInvocationCount($inorequalsinvocations)) {
-                    case 1:
-                        $this->assertEquals(array_slice($ids, 0, 1000), $paramids);
-                        return [' IN whatever', []];
-                    case 2:
-                        $this->assertEquals(array_slice($ids, 1000), $paramids);
-                        return [' IN whatever2', []];
-                    default:
-                        $this->fail('Unexpected invocation count');
-                }
-            });
-        $getinvocations = $this->exactly(2);
-        $DB->expects($getinvocations)
+            ->withConsecutive(
+                array(array_slice($ids, 0, 1000)),
+                array(array_slice($ids, 1000))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(' IN whatever', array()),
+                array(' IN whatever2', array()));
+        $DB->expects($this->exactly(2))
             ->method('get_recordset_sql')
-            ->willReturnCallback(function () use ($getinvocations, $progress) {
-                return match (self::getInvocationCount($getinvocations)) {
-                    1 => new core_completionlib_fake_recordset(array_slice($progress, 0, 1000)),
-                    2 => new core_completionlib_fake_recordset(array_slice($progress, 1000)),
-                    default => $this->fail('Unexpected invocation count'),
-                };
-            });
+            ->willReturnOnConsecutiveCalls(
+                new core_completionlib_fake_recordset(array_slice($progress, 0, 1000)),
+                new core_completionlib_fake_recordset(array_slice($progress, 1000)));
 
         $result = $c->get_progress_all(true, 3);
         $resultok = true;

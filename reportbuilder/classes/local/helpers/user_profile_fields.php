@@ -56,7 +56,11 @@ class user_profile_fields {
         /** @var string The entity name used when adding columns and filters */
         private readonly string $entityname,
     ) {
-        $this->userprofilefields = profile_get_user_fields_with_data(0);
+        // Retrieve the list of available/visible user profile fields.
+        $this->userprofilefields = array_filter(
+            profile_get_user_fields_with_data(0),
+            fn(profile_field_base $field) => $field->is_visible(),
+        );
     }
 
     /**
@@ -148,8 +152,7 @@ class user_profile_fields {
                     );
 
                     return $field->display_data();
-                }, $profilefield)
-                ->set_is_available($profilefield->is_visible());
+                }, $profilefield);
         }
 
         return $columns;
@@ -219,12 +222,11 @@ class user_profile_fields {
                 $userinfoparams,
             ))
                 ->add_joins($this->get_joins())
-                ->add_join($this->get_table_join($profilefield))
-                ->set_is_available($profilefield->is_visible());
+                ->add_join($this->get_table_join($profilefield));
 
-            // If using a select filter, then populate the options.
-            if ($filter->get_filter_class() === select::class) {
-                $filter->set_options_callback(fn(): array => $profilefield->options);
+            // If menu type then set filter options as appropriate.
+            if ($profilefield->field->datatype === 'menu') {
+                $filter->set_options($profilefield->options);
             }
 
             $filters[] = $filter;

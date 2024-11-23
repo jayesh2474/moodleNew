@@ -160,9 +160,7 @@ class badge extends base {
                     return '';
                 }
                 $badge = new \core_badges\badge($badgeid);
-                if (empty($badge->criteria)) {
-                    return '<span class="no-criteria-set d-none"></span>';
-                }
+
                 $renderer = $PAGE->get_renderer('core_badges');
                 return $renderer->print_badge_criteria($badge, 'short');
             });

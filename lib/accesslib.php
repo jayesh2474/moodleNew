@@ -2641,13 +2641,7 @@ function get_deprecated_capability_info($capabilityname) {
         foreach ($allcaps as $cap) {
             if (!in_array($cap['component'], $components)) {
                 $components[] = $cap['component'];
-
-                $componentdir = core_component::get_component_directory($cap['component']);
-                if ($componentdir === null) {
-                    continue;
-                }
-
-                $defpath = "{$componentdir}/db/access.php";
+                $defpath = core_component::get_component_directory($cap['component']).'/db/access.php';
                 if (file_exists($defpath)) {
                     $deprecatedcapabilities = [];
                     require($defpath);

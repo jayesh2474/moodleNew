@@ -1490,7 +1490,11 @@ function set_user_preference($name, $value, $user = null) {
     } else if (is_array($value)) {
         throw new coding_exception('Invalid value in set_user_preference() call, arrays are not allowed');
     }
+    // Value column maximum length is 1333 characters.
     $value = (string)$value;
+    if (core_text::strlen($value) > 1333) {
+        throw new coding_exception('Invalid value in set_user_preference() call, value is is too long for the value column');
+    }
 
     if (is_null($user)) {
         $user = $USER;
@@ -5349,6 +5353,35 @@ function generate_email_processing_address($modid, $modargs) {
 
     $header = $CFG->mailprefix . substr(base64_encode(pack('C', $modid)), 0, 2).$modargs;
     return $header . substr(md5($header.get_site_identifier()), 0, 16).'@'.$CFG->maildomain;
+}
+
+/**
+ * ?
+ *
+ * @todo Finish documenting this function
+ *
+ * @param string $modargs
+ * @param string $body Currently unused
+ */
+function moodle_process_email($modargs, $body) {
+    global $DB;
+
+    // The first char should be an unencoded letter. We'll take this as an action.
+    switch ($modargs[0]) {
+        case 'B': { // Bounce.
+            list(, $userid) = unpack('V', base64_decode(substr($modargs, 1, 8)));
+            if ($user = $DB->get_record("user", array('id' => $userid), "id,email")) {
+                // Check the half md5 of their email.
+                $md5check = substr(md5($user->email), 0, 16);
+                if ($md5check == substr($modargs, -16)) {
+                    set_bounce_count($user);
+                }
+                // Else maybe they've already changed it?
+            }
+        }
+        break;
+        // Maybe more later?
+    }
 }
 
 // CORRESPONDENCE.

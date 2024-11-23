@@ -320,18 +320,15 @@ EOF;
             $filepathinzip = dirname($subdir) . $file->get_filearea() . '/' . $file->get_filepath() . $file->get_filename();
             $filepathinzip = ltrim(preg_replace('#/+#', '/', $filepathinzip), '/');
             $storedfileargs[] = [
-                $context,
-                $filepathinzip,
-                $file,
+                $this->equalTo($context),
+                $this->equalTo($filepathinzip),
+                $this->equalTo($file),
             ];
         }
 
-        $invocations = $this->exactly(count($expectedfiles));
-        $archive->expects($invocations)
+        $archive->expects($this->exactly(count($expectedfiles)))
             ->method('add_file_from_stored_file')
-            ->willReturnCallback(function (...$args) use ($invocations, $storedfileargs) {
-                $this->assertEquals($storedfileargs[self::getInvocationCount($invocations) - 1], $args);
-            });
+            ->withConsecutive(...$storedfileargs);
 
         $archive->expects($this->never())
             ->method('add_file_from_string');

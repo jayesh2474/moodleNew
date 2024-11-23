@@ -32,6 +32,7 @@ Feature: Generate text using AI
     And I enable "openai" "aiprovider" plugin
     And the following config values are set as admin:
       | apikey | 123 | aiprovider_openai |
+      | orgid  | abc | aiprovider_openai |
     And I enable "editor" "aiplacement" plugin
 
   @javascript
